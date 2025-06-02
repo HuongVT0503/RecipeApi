@@ -9,7 +9,7 @@ namespace RecipeApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class RatingsController : ControllerBase
+    public class RatingsController: ControllerBase
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<RatingsController> _logger;
@@ -22,55 +22,43 @@ namespace RecipeApi.Controllers
 
         // POST: api/Ratings
         [HttpPost]
-        public async Task<ActionResult<RatingReadDto>> CreateRating(RatingCreateDto ratingDto)
+        public async Task<ActionResult<RatingReadDto>> CreateRating(RatingCreateDto rating)
         {
-            try
-            {
-                var recipe = await _context.Recipes.FindAsync(ratingDto.RecipeId);
-                if (recipe == null)
-                {
-                    return NotFound(new { error = "Recipe not found", details = $"No recipe exists with ID {ratingDto.RecipeId}" });
-                }
+            var recipe = await _context.Recipes.FindAsync(rating.RecipeId);
+            if (recipe == null)    return NotFound();   ///
+            var newRating = new Rating{
+                RecipeId = rating.RecipeId,
+                Score = rating.Score,
+                Recipe = recipe
+            };
 
-                var rating = new Rating
-                {
-                    RecipeId = ratingDto.RecipeId,
-                    Score = ratingDto.Score,
-                    Recipe = recipe
-                };
+            _context.Ratings.Add(newRating);
+            await _context.SaveChangesAsync();
 
-                _context.Ratings.Add(rating);
-                await _context.SaveChangesAsync();
-
-                var ratingReadDto = new RatingReadDto
-                {
-                    Id = rating.Id,
-                    RecipeId = rating.RecipeId,
-                    Score = rating.Score
-                };
-
-                return Ok(ratingReadDto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating rating for recipe {RecipeId}", ratingDto.RecipeId);
-                return StatusCode(500, new { error = "An error occurred while processing your request", details = ex.Message });
-            }
+            return Ok(new RatingReadDto{
+                Id = newRating.Id,
+                RecipeId = newRating.RecipeId,
+                Score = newRating.Score
+            });
+            
+            
         }
+
+
+
+
+
+
 
         // GET: api/Ratings/recipe/5
         [HttpGet("recipe/{recipeId}")]
         public async Task<ActionResult<IEnumerable<RatingReadDto>>> GetRecipeRatings(int recipeId)
         {
-            try
-            {
-                var recipe = await _context.Recipes.FindAsync(recipeId);
-                if (recipe == null)
-                {
-                    return NotFound(new { error = "Recipe not found", details = $"No recipe exists with ID {recipeId}" });
-                }
+            var recipe = await _context.Recipes.FindAsync(recipeId);
+            if (recipe == null)          return NotFound();
 
-                var ratings = await _context.Ratings
+            
+            var ratings = await _context.Ratings
                     .Where(r => r.RecipeId == recipeId)
                     .Select(r => new RatingReadDto
                     {
@@ -79,14 +67,9 @@ namespace RecipeApi.Controllers
                         Score = r.Score
                     })
                     .ToListAsync();
-
-                return ratings;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while fetching ratings for recipe {RecipeId}", recipeId);
-                return StatusCode(500, new { error = "An error occurred while processing your request", details = ex.Message });
-            }
+            return Ok(ratings);
+            
+            
         }
     }
 } 

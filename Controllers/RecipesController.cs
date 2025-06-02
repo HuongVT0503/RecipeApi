@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using RecipeApi.Data;
 using RecipeApi.DTOs;
 using RecipeApi.Models;
-///////////////////////using RecipeApi.Services.Interfaces;     USE SERVICES TO DELEGATE ALL DATA OPERATIONS TO IRecipeService // dont do this
+///////dont delegate, thats redundance n troublesome
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,97 +53,45 @@ namespace RecipeApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RecipeReadDto>>> GetRecipes(
             [FromQuery] string? tag,
-            /*[FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10,*/
-            [FromQuery] string? sortByRating = null)  // "asc" or "desc"  ..ACS
+            [FromQuery] string? sortByRating = null)  // "asc" or "desc" 
         {
-            try
-            {
-                //base query: recipe->its tags &its ratings
-                // Validate pagination parameters
-                /*
-                if (pageNumber < 1) pageNumber = 1;
-                if (pageSize < 1) pageSize = 10;
-                if (pageSize > 50) pageSize = 50; // Limit maximum page size
-                */
+            // Base query: recipe->its tags & its ratings
+            var query = _context.Recipes
+                .Include(r => r.RecipeTags)
+                       .ThenInclude(rt => rt.Tag)
+                .Include(r => r.Ratings)
+                .AsQueryable();
 
-                // Base query: recipe->its tags & its ratings
-                var query = _context.Recipes
-                       .Include(r => r.RecipeTags)
-                              .ThenInclude(rt => rt.Tag)
-                       .Include(r => r.Ratings)
-                       .AsQueryable();
-
-                // ?filter for tag
-                if (!string.IsNullOrWhiteSpace(tag))  //isnullorwhitespace filters for all isnullorempty filters for (null or ""), but also includes whitespces ("  ")
+                //?filter for tag
+            if (!string.IsNullOrWhiteSpace(tag))  //isnullorwhitespace filters for all isnullorempty filters for (null or ""), but also includes whitespces ("  ")
                     query = query.Where(r => r.RecipeTags.Any(rt => rt.Tag.Name == tag));
 
-                // Apply sorting by average rating if specified
-                if (!string.IsNullOrWhiteSpace(sortByRating))
-                {
-                    if (sortByRating.ToLower() == "asc")
-                    {
-                        query = query.OrderBy(r => r.Ratings.Any() ? r.Ratings.Average(x => x.Score) : 0);
-                    }
-                    else if (sortByRating.ToLower() == "desc")
-                    {
-                        query = query.OrderByDescending(r => r.Ratings.Any() ? r.Ratings.Average(x => x.Score) : 0);
-                    }
-                }
+            //sort by rating: asc|| desc      //
 
-                // Get total count for pagination metadata
-                /*
-                var totalCount = await query.CountAsync();
-                var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-                */
-
-                // Apply pagination
-                var items = await query
-                    /*
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
-                    */
-                    .ToListAsync();
-
-                // Map to DTOs: 1 recipe--> 1 RecipeReadDto
-                var dtoList = items.Select(r => new RecipeReadDto
-                {
-                    Id = r.Id,
-                    Title = r.Title,
-                    Instructions = r.Instructions,
-                    Tags = r.RecipeTags.Select(rt => rt.Tag.Name).ToList(),
-                    //AVERAGE ratings score 
-                    AverageRating = r.Ratings.Any()
-                             ? r.Ratings.Average(x => x.Score)
-                             : 0,
-                });
-
-                // Add pagination metadata to response
-                /*
-                var paginationMetadata = new
-                {
-                    TotalCount = totalCount,
-                    PageSize = pageSize,
-                    CurrentPage = pageNumber,
-                    TotalPages = totalPages,
-                    HasNext = pageNumber < totalPages,
-                    HasPrevious = pageNumber > 1
-                };
-                */
-
-                return Ok(new
-                {
-                    Data = dtoList
-                    /*
-                    Pagination = paginationMetadata
-                    */
-                });
+            if (!string.IsNullOrWhiteSpace(sortByRating)){
+                var asc = sortByRating.Equals("asc", StringComparison.OrdinalIgnoreCase);
+                query=asc
+                    ? query.OrderBy(r => r.Ratings.Any() ? r.Ratings.Average(x => x.Score) : 0)
+                    : query.OrderByDescending(r => r.Ratings.Any() ? r.Ratings.Average(x => x.Score) : 0); //desc or des or anything is ok
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while fetching recipes");
-                return StatusCode(500, new { error = "An error occurred while processing your request", details = ex.Message });
-            }
+
+
+            var recipes = await query.ToListAsync();
+
+                
+
+
+                return Ok(new{
+                    Data = recipes.Select(r => new RecipeReadDto
+                    {
+                        Id = r.Id,
+                        Title = r.Title,
+                        Instructions = r.Instructions,
+                        Tags = r.RecipeTags.Select(rt => rt.Tag.Name).ToList(),
+                        AverageRating = r.Ratings.Any() ? r.Ratings.Average(x => x.Score) : 0
+                    })
+                });
+            
         }
 
 
@@ -154,17 +102,6 @@ namespace RecipeApi.Controllers
         // GET: api/Recipes/{r.Id}
         //GET /api/recipes/5                                  ----> 1 recipe w/ id =5
         [HttpGet("{id:int}")]
-        //public async Task<ActionResult<Recipe>> GetRecipe(int id)
-        //{
-        //    var recipe = await _context.Recipes.FindAsync(id);
-
-        //    if (recipe == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return recipe;
-        //}
         public async  Task<ActionResult<RecipeReadDto> > Get(int id)          //TASK: the framework run it asynchronously and resume when I/O completes
         {
             try
@@ -186,9 +123,7 @@ namespace RecipeApi.Controllers
                     Instructions = recipe.Instructions,
                     Tags = recipe.RecipeTags.Select(rt => rt.Tag.Name).ToList(),
                     //AVERAGE ratings score 
-                    AverageRating = recipe.Ratings.Any()
-                             ? recipe.Ratings.Average(x => x.Score)
-                             : 0,
+                    AverageRating = recipe.Ratings.Any()        ? recipe.Ratings.Average(x => x.Score) : 0,
                 };
 
                 return Ok(dto);   //200 OK
@@ -207,9 +142,6 @@ namespace RecipeApi.Controllers
 
 
 
-
-
-
         // PUT: api/Recipes/{id}
         //PUT /api/recipes/5                                       ---> UPDATE an EXISTING recipe by replacing its title,instructions,tags
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -218,8 +150,6 @@ namespace RecipeApi.Controllers
                                                                                                      //the dto obj(whochh holds in4 for the update) comes from the request body
 
         {
-            try
-            {
                 //load 1 existing recipe, include its tags
                var exist= await _context.Recipes
                     .Include(r => r.RecipeTags)
@@ -229,16 +159,9 @@ namespace RecipeApi.Controllers
                 if (exist == null) return NotFound();      //404
 
                 //UPDATE only if provided
-                if (dto.Title != null)
-                {
-                    exist.Title = dto.Title.Transform(To.TitleCase);
-                }
-                
-                if (dto.Instructions != null)
-                {
-                    exist.Instructions = dto.Instructions;
-                }
-
+                if (dto.Title != null)            exist.Title = dto.Title.Transform(To.TitleCase);
+                if (dto.Instructions != null)       exist.Instructions = dto.Instructions;
+         
                 if (dto.TagIds != null)  //dto contains the new tags
                 {
                     exist.RecipeTags = dto.TagIds
@@ -251,16 +174,8 @@ namespace RecipeApi.Controllers
                 await _context.SaveChangesAsync();
 
                 return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while updating recipe {RecipeId}", id);
-                return StatusCode(500, new { error = "An error occurred while processing your request", details = ex.Message });
-            }
+            
         }
-
-
-
 
 
 
@@ -292,9 +207,7 @@ namespace RecipeApi.Controllers
 
                     RecipeTags=tags.Select(t=> new RecipeTag { Tag=t}).ToList(),   //RecipeTags
 
-                    //RecipeTags = dto.TagIds
-                    //    .Select(tagId => new RecipeTag { TagId = tagId })
-                    //    .ToList()
+                   
                 };
 
 
