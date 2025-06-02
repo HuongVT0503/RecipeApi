@@ -11,7 +11,7 @@
 
 - **Xem công thức**
   - Hiển thị đầy đủ thông tin công thức
-  - Hiển thị danh sách đánh giá
+  - Hiển thị  điểm đánh giá trung bình
 
 - **Cập nhật công thức**
   - Chỉnh sửa thông tin cơ bản: tên
