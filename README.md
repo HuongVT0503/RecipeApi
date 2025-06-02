@@ -48,30 +48,20 @@
 #### CRUD Operations cho Thẻ
 - **Tạo thẻ mới**
   - Đặt tên thẻ
-  - Thêm mô tả
-  - Chọn màu sắc đại diện
-  - Thêm icon
 
 - **Xem danh sách thẻ**
   - Hiển thị tất cả thẻ
   - Hiển thị số lượng công thức cho mỗi thẻ
-  - Sắp xếp theo tên/số lượng
 
 - **Cập nhật thẻ**
   - Sửa tên thẻ
-  - Sửa mô tả
-  - Thay đổi màu sắc
-  - Cập nhật icon
 
 - **Xóa thẻ**
   - Xóa vĩnh viễn
-  - Xóa và chuyển công thức sang thẻ khác
 
 #### Gán Thẻ cho Công Thức
 - Gán nhiều thẻ cho một công thức
 - Gỡ thẻ khỏi công thức
-- Tự động gợi ý thẻ dựa trên nội dung
-- Kiểm tra trùng lặp thẻ
 
 #### Tìm Kiếm Công Thức Theo Thẻ
 - Tìm công thức theo một thẻ
