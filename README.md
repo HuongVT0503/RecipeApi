@@ -60,11 +60,9 @@
   - Xóa vĩnh viễn
 
 #### Gán Thẻ cho Công Thức
-- Gán nhiều thẻ cho một công thức
+- Gán 1 hoặc nhiều thẻ cho một công thức
 - Gỡ thẻ khỏi công thức
 
 #### Tìm Kiếm Công Thức Theo Thẻ
 - Tìm công thức theo một thẻ
-- Tìm công thức theo nhiều thẻ (AND/OR)
-- Hiển thị các thẻ liên quan
-- Gợi ý thẻ phổ biến 
+- Xếp theo điểm đánh giá trung bình
