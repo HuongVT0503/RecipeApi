@@ -6,17 +6,12 @@
 
 #### CRUD Operations cho Công Thức
 - **Tạo công thức mới**
-  - Thêm thông tin cơ bản: tên, mô tả, thời gian nấu, độ khó
-  - Thêm danh sách nguyên liệu với số lượng
-  - Thêm các bước nấu với hình ảnh minh họa
-  - Thêm hình ảnh đại diện cho công thức
+  - Thêm thông tin cơ bản: tên, công thức
   - Gán các thẻ (tags) liên quan
 
 - **Xem công thức**
   - Hiển thị đầy đủ thông tin công thức
-  - Hiển thị danh sách đánh giá và bình luận
-  - Hiển thị các công thức liên quan
-  - Tính năng lưu công thức vào danh sách yêu thích
+  - Hiển thị danh sách đánh giá
 
 - **Cập nhật công thức**
   - Chỉnh sửa thông tin cơ bản
