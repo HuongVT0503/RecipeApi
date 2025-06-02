@@ -14,60 +14,32 @@
   - Hiển thị danh sách đánh giá
 
 - **Cập nhật công thức**
-  - Chỉnh sửa thông tin cơ bản
-  - Thêm/xóa/sửa nguyên liệu
+  - Chỉnh sửa thông tin cơ bản: tên
   - Thêm/xóa/sửa các bước nấu
-  - Cập nhật hình ảnh
   - Quản lý thẻ
 
 - **Xóa công thức**
   - Xóa vĩnh viễn
-  - Lưu vào thùng rác (soft delete)
-  - Khôi phục từ thùng rác
 
 #### Tìm Kiếm và Lọc Công Thức
 - **Tìm kiếm theo từ khóa**
-  - Tìm theo tên công thức
-  - Tìm theo nguyên liệu
-  - Tìm theo mô tả
+  - Tìm theo id
   - Tìm theo thẻ
 
 - **Bộ lọc nâng cao**
-  - Lọc theo thời gian nấu
-  - Lọc theo độ khó
-  - Lọc theo loại món ăn
-  - Lọc theo chế độ ăn (chay, mặn, etc.)
-  - Lọc theo mùa
-  - Lọc theo xuất xứ
-
-#### Phân Trang Kết Quả
-- Hiển thị số lượng kết quả mỗi trang (10, 20, 50 items)
-- Điều hướng trang (first, previous, next, last)
-- Hiển thị tổng số trang và tổng số kết quả
-- Lưu trạng thái phân trang
+  - Lọc theo điểm đánh giá
 
 ### 5.2. Quản Lý Đánh Giá
 
-#### Thêm/Xóa/Sửa Đánh Giá
+#### Thêm/Xóa Đánh Giá
 - **Thêm đánh giá mới**
   - Chấm điểm (1-5 sao)
-  - Viết nhận xét
-  - Thêm hình ảnh minh họa
-  - Đánh dấu hữu ích/không hữu ích
-
-- **Chỉnh sửa đánh giá**
-  - Sửa điểm đánh giá
-  - Sửa nội dung nhận xét
-  - Cập nhật hình ảnh
 
 - **Xóa đánh giá**
   - Xóa vĩnh viễn
-  - Ẩn đánh giá (cho người dùng khác)
 
 #### Tính Toán Điểm Trung Bình
-- Tính điểm trung bình cho mỗi công thức
-- Phân loại đánh giá (tốt, khá, trung bình, kém)
-- Thống kê số lượng đánh giá theo mức độ
+- Tính điểm đánh giá trung bình cho mỗi công thức
 - Cập nhật điểm trung bình realtime
 - Sắp xếp công thức theo điểm đánh giá
 
